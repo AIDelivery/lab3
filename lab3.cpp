@@ -26,11 +26,11 @@ void custom_sleep(int sec) {
 int main(int argc, char *argv[]) {
     int pid1, pid2;
     int status;
-    char filename[] = "LOG", *childarg = new char[20];
+    char filename[255], *childarg = new char[20];
     int del_sec[3];
 
 		try {
-			if(argc < 3) { childarg = "3"; }
+			if(argc < 3) { childarg = (char*) "3\n"; }
 			else { childarg = argv[3]; }
 	    if(argc < 3) { del_sec[1] = 3; }
 			else { del_sec[1] = atoi(argv[2]); }
@@ -39,16 +39,16 @@ int main(int argc, char *argv[]) {
 		}
 		catch(const exception& e) { cout << "ERROR. " << e.what(); exit(EXIT_FAILURE); }
 
-    // cout << "Input log file name: ";
-		// cin >> filename;
-    FILE *fn = fopen("LOG", "w");
+    cout << "Input log file name: ";
+		cin >> filename;
+    FILE *fn = fopen(filename, "w");
     fclose(fn);
 
     pid1 = fork();
     if(pid1 > 0) {
 			pid2 = vfork();
 			if(pid2 == 0) {
-				execl("./sub_prog", "Descendant #2", "LOG", childarg, (char*) 0);
+				execl("./sub_prog", "Descendant #2", filename, childarg, (char*) 0);
 			}
 		}
 
@@ -74,6 +74,6 @@ int main(int argc, char *argv[]) {
 
 	waitpid(pid1, &status, 0);
 	fclose(fn);
-	delete [] childarg;
-	return 0;
+	// delete[] childarg;
+	exit(EXIT_SUCCESS);
 }
